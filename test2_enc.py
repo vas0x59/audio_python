@@ -25,19 +25,23 @@ class SpectrumAnalyzer:
     CHUNK = 150
     START = 0
     N = CHUNK
-    thresh = 14
+    thresh = 6
     wave_x = 0
     wave_y = 0
     spec_x = 0
     spec_y = 0
     data = []
     spectr = np.zeros((N, N//2))
+    now_r = np.zeros(N//2)
     hist = np.zeros((500, 4))
     # qweqweqwe = []
-    def predict(self, img):
+    def predict(self, img, now_r):
         image = cv2.resize(img, (64, 64))/255.0
         image = np.expand_dims(image, -1)
-        pred_x = self.encoder.predict(np.expand_dims(image,axis=0))
+        pred_x = self.encoder.predict(np.expand_dims(image,axis=0))[0]
+        # now = self.now_r
+        # print(pred_x, now_r)
+        # data_exp = np.concatenate([pred_x, now_r], axis=0)
         pred = self.clf.predict(pred_x)[0][0]
         ## The_Show_Must_Go_On We_Are_The_Champions We_Will_Rock_You none
         # print()
@@ -45,9 +49,12 @@ class SpectrumAnalyzer:
         return pred
         # to_nn = np.expand_dims(spectr[:, :]
     def load_models(self):
-        self.encoder = load_model('./encoder_model_12000_out.h5')
+        # self.encoder = load_model('./encoder_model_12000_out2.h5')
+        # self.clf = catboost.CatBoostClassifier()
+        # self.clf.load_model('./catboost_decoder_12000_out2_exp_5.catboost')
+        self.encoder = load_model('./encoder_model_12000_out2.h5')
         self.clf = catboost.CatBoostClassifier()
-        self.clf.load_model('./catboost_decoder_12000_1.catboost')
+        self.clf.load_model('./catboost_decoder_12000_out2_6.catboost')
         # self.encoder = load_model('./encoder_model_2.h5')
         # self.clf = catboost.CatBoostClassifier()
         # self.clf.load_model('./catboost_decoder.catboost')
@@ -57,7 +64,7 @@ class SpectrumAnalyzer:
         i = 0
         
         while True:
-            self.pr = self.predict(self.img)
+            self.pr = self.predict(self.img, self.now_r)
             # qw+=self.pr
             # now_r = self.pr
             # self.hist = np.roll(self.hist, 1, axis=0)
@@ -112,9 +119,9 @@ class SpectrumAnalyzer:
                 # self.shift_arr()
                 # self.file.write(str(np.round(self.spec_y, decimals=3)))
                 # now_r = np.round(self.spec_y, decimals=)
-                now_r = self.spec_y[:self.N//2]
+                self.now_r = self.spec_y[:self.N//2]
                 self.spectr = np.roll(self.spectr, 1, axis=0)
-                self.spectr[0] = now_r
+                self.spectr[0] = self.now_r
                 self.img = (np.clip(self.spectr, 0, self.thresh)*(255/self.thresh)).astype('uint8')
                 # self.out.write(img)
                 # print(self.spectr.shape)
