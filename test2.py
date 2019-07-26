@@ -17,11 +17,11 @@ import matplotlib.pyplot as plt
 class SpectrumAnalyzer:
     FORMAT = pyaudio.paFloat32
     CHANNELS = 1
-    RATE = 12000
-    CHUNK = 150
+    RATE = 16000
+    CHUNK = 256
     START = 0
     N = CHUNK
-    thresh = 14
+    thresh = 7
     wave_x = 0
     wave_y = 0
     spec_x = 0
@@ -40,7 +40,7 @@ class SpectrumAnalyzer:
             frames_per_buffer = self.CHUNK)
         # self.file = open("test.csv", "w")
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
-        self.out = cv2.VideoWriter('none_out_2.avi',fourcc, 72.0, (self.N, self.N), False)
+        self.out = cv2.VideoWriter('We_Are_The_Champions_16000_72_out_3123.avi',fourcc, 72.0, (self.N, self.N), False)
         # Main loop
         self.loop()
 

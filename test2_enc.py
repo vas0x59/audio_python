@@ -33,16 +33,27 @@ class SpectrumAnalyzer:
     data = []
     spectr = np.zeros((N, N//2))
     now_r = np.zeros(N//2)
-    hist = np.zeros((500, 4))
+    hist = np.zeros((80, 128))
     # qweqweqwe = []
+    labels_str = ["none", "We_Are_The_Champions", "The_Show_Must_Go_On", "We_Will_Rock_You"]
     def predict(self, img, now_r):
         image = cv2.resize(img, (64, 64))/255.0
         image = np.expand_dims(image, -1)
         pred_x = self.encoder.predict(np.expand_dims(image,axis=0))[0]
+        # hist
+        self.hist = np.roll(self.hist, 1, axis=0)
+        self.hist[0] = pred_x
+        
         # now = self.now_r
         # print(pred_x, now_r)
         # data_exp = np.concatenate([pred_x, now_r], axis=0)
-        pred = self.clf.predict(pred_x)[0][0]
+
+        pred = self.clf.predict(pred_x)[0][0] #128
+        # pred = self.clf.predict(np.concatenate(self.hist))[0][0] #6400
+
+        # pred = self.labels_str[self.clf.predict([[np.expand_dims(self.hist, -1)]]).argmax(axis=-1)[0]] #6400
+
+
         ## The_Show_Must_Go_On We_Are_The_Champions We_Will_Rock_You none
         # print()
         # pred = self.clf.predict_proba(pred_x)[0]
@@ -52,12 +63,21 @@ class SpectrumAnalyzer:
         # self.encoder = load_model('./encoder_model_12000_out2.h5')
         # self.clf = catboost.CatBoostClassifier()
         # self.clf.load_model('./catboost_decoder_12000_out2_exp_5.catboost')
-        self.encoder = load_model('./encoder_model_12000_out2.h5')
-        self.clf = catboost.CatBoostClassifier()
-        self.clf.load_model('./catboost_decoder_12000_out2_6.catboost')
+        # self.encoder = load_model('./encoder_model_12000_out2.h5')
+        # self.clf = catboost.CatBoostClassifier()
+        # self.clf.load_model('./catboost_decoder_12000_out2_6.catboost')
         # self.encoder = load_model('./encoder_model_2.h5')
         # self.clf = catboost.CatBoostClassifier()
         # self.clf.load_model('./catboost_decoder.catboost')
+
+        self.encoder = load_model('./encoder_model_12000_16000_128f_15_out2.h5')
+        self.clf = catboost.CatBoostClassifier()
+        self.clf.load_model('./catboost_decoder_12000_16000_128f_15_out2.catboost')
+        # self.clf.load_model('./catboost_decoder_12000_16000_128f_out2.catboost')
+        # self.clf.load_model('./catboost_decoder_12000_16000_6400f_out2.catboost')
+
+        # self.clf = load_model('./keras_decoder_12000_16000_6400f_out3.h5')
+        # self.clf = load_model('./keras_decoder_12000_16000_10240f_out3.h5')
     def predict_th(self):
         self.load_models()
         dd = {"none":3, "The_Show_Must_Go_On":0, "We_Will_Rock_You":2, "We_Are_The_Champions":1}
@@ -65,6 +85,8 @@ class SpectrumAnalyzer:
         
         while True:
             self.pr = self.predict(self.img, self.now_r)
+            cv2.imshow("enc", cv2.resize((np.clip(self.hist, 0, self.thresh)*(255/9)).astype('uint8'), (512, 512), interpolation = cv2.INTER_AREA) )
+            cv2.waitKey(1)
             # qw+=self.pr
             # now_r = self.pr
             # self.hist = np.roll(self.hist, 1, axis=0)
@@ -127,8 +149,9 @@ class SpectrumAnalyzer:
                 # print(self.spectr.shape)
                 
                 
-                cv2.imshow("img", cv2.resize(self.img, (256, 512), interpolation = cv2.INTER_AREA) )
-                cv2.waitKey(1)
+                # cv2.imshow("img", cv2.resize(self.img, (256, 512), interpolation = cv2.INTER_AREA) )
+                # cv2.imshow("enc", cv2.resize((np.clip(self.hist, 0, self.thresh)*(255/9)).astype('uint8'), (512, 512), interpolation = cv2.INTER_AREA) )
+                # cv2.waitKey(1)
                 # self.qweqweqwe.append(max(now_r))
                 # print(max( self.qweqweqwe))
                 # print(np.round(self.spec_y, decimals=3))
