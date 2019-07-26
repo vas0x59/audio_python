@@ -33,7 +33,7 @@ class SpectrumAnalyzer:
     data = []
     spectr = np.zeros((N, N//2))
     now_r = np.zeros(N//2)
-    hist = np.zeros((80, 128))
+    hist = np.zeros((50, 128))
     # qweqweqwe = []
     labels_str = ["none", "We_Are_The_Champions", "The_Show_Must_Go_On", "We_Will_Rock_You"]
     def predict(self, img, now_r):
@@ -42,14 +42,14 @@ class SpectrumAnalyzer:
         pred_x = self.encoder.predict(np.expand_dims(image,axis=0))[0]
         # hist
         self.hist = np.roll(self.hist, 1, axis=0)
-        self.hist[0] = pred_x
+        self.hist[0] = pred_x 
         
         # now = self.now_r
         # print(pred_x, now_r)
         # data_exp = np.concatenate([pred_x, now_r], axis=0)
 
-        pred = self.clf.predict(pred_x)[0][0] #128
-        # pred = self.clf.predict(np.concatenate(self.hist))[0][0] #6400
+        # pred = self.clf.predict(pred_x)[0][0] #128
+        pred = self.clf.predict(np.concatenate(self.hist))[0][0] #6400
 
         # pred = self.labels_str[self.clf.predict([[np.expand_dims(self.hist, -1)]]).argmax(axis=-1)[0]] #6400
 
@@ -72,12 +72,14 @@ class SpectrumAnalyzer:
 
         self.encoder = load_model('./encoder_model_12000_16000_128f_15_out2.h5')
         self.clf = catboost.CatBoostClassifier()
-        self.clf.load_model('./catboost_decoder_12000_16000_128f_15_out2.catboost')
+        self.clf.load_model('./catboost_decoder_12000_16000_6400f_15_out2.catboost')
+        # self.clf.load_model('./catboost_decoder_12000_16000_128f_15_out2.catboost')
         # self.clf.load_model('./catboost_decoder_12000_16000_128f_out2.catboost')
         # self.clf.load_model('./catboost_decoder_12000_16000_6400f_out2.catboost')
 
         # self.clf = load_model('./keras_decoder_12000_16000_6400f_out3.h5')
         # self.clf = load_model('./keras_decoder_12000_16000_10240f_out3.h5')
+        # self.clf = load_model('./keras_decoder_12000_16000_6400f_15_out3.h5')
     def predict_th(self):
         self.load_models()
         dd = {"none":3, "The_Show_Must_Go_On":0, "We_Will_Rock_You":2, "We_Are_The_Champions":1}
