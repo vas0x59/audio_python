@@ -70,9 +70,9 @@ class SpectrumAnalyzer:
         # self.clf = catboost.CatBoostClassifier()
         # self.clf.load_model('./catboost_decoder.catboost')
 
-        self.encoder = load_model('./encoder_model_12000_16000_128f_15_out2.h5')
+        self.encoder = load_model('./models/encoder/encoder_model_12000_16000_128f_15_out2.h5')
         self.clf = catboost.CatBoostClassifier()
-        self.clf.load_model('./catboost_decoder_12000_16000_6400f_15_out2.catboost')
+        self.clf.load_model('./models/decoder/catboost_decoder_12000_16000_6400f_15_out2.catboost')
         # self.clf.load_model('./catboost_decoder_12000_16000_128f_15_out2.catboost')
         # self.clf.load_model('./catboost_decoder_12000_16000_128f_out2.catboost')
         # self.clf.load_model('./catboost_decoder_12000_16000_6400f_out2.catboost')
